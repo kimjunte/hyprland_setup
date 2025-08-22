@@ -7,7 +7,7 @@ echo "[*] Starting Hypland config setup..."
 # Install required packages (example for Arch-based systems)
 if command -v pacman &> /dev/null; then
     echo "[*] Installing packages..."
-    sudo pacman -S --noconfirm keyd obsidian hyprland waybar
+    sudo pacman -S --noconfirm keyd obsidian hyprland waybar vim nvim visual-studio-code-bin
 fi
 
 # Copy keyd config
