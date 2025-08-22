@@ -24,7 +24,7 @@ cp -r hypr/* ~/.config/hypr/
 # Copy wayland config
 echo "[*] Setting up Wayland config..."
 mkdir -p ~/.config/waybar
-cp -r wayland/* ~/.config/waybar/
+cp -r waybar/* ~/.config/waybar/
 
 echo "[✓] Setup complete."
 
