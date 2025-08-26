@@ -7,7 +7,10 @@ echo "[*] Starting Hypland config setup..."
 # Install required packages (example for Arch-based systems)
 if command -v pacman &>/dev/null; then
   echo "[*] Installing packages..."
+  # download software I use
   sudo pacman -S --noconfirm keyd obsidian hyprland waybar vim nvim visual-studio-code-bin
+  # download korean
+  sudo pacman -S --noconfirm noto-fonts-cjk
 fi
 
 # Copy keyd config
