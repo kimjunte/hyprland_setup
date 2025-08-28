@@ -31,5 +31,6 @@ cp -r waybar/* ~/.config/waybar/
 
 echo "[*] Setting up Vim config..."
 cp -r vim/.vimrc ~/.vimrc
+cp -r vim/.bashrc ~/.bashrc
 
 echo "[✓] Setup complete."
