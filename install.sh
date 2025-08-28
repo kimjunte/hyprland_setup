@@ -29,4 +29,7 @@ echo "[*] Setting up Wayland config..."
 mkdir -p ~/.config/waybar
 cp -r waybar/* ~/.config/waybar/
 
+echo "[*] Setting up Vim config..."
+cp -r vim/.vimrc ~/.vimrc
+
 echo "[✓] Setup complete."
