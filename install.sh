@@ -8,7 +8,7 @@ echo "[*] Starting Hypland config setup..."
 if command -v pacman &>/dev/null; then
   echo "[*] Installing packages..."
   # download software I use
-  sudo pacman -S --noconfirm keyd obsidian hyprland waybar vim visual-studio-code-bin obs-studio neovim
+  sudo pacman -S --noconfirm gcc keyd obsidian hyprland waybar vim visual-studio-code-bin obs-studio neovim
   # download korean
   sudo pacman -S --noconfirm noto-fonts-cjk
 fi
@@ -29,8 +29,9 @@ echo "[*] Setting up Wayland config..."
 mkdir -p ~/.config/waybar
 cp -r waybar/* ~/.config/waybar/
 
-echo "[*] Setting up Vim config..."
-cp -r vim/.vimrc ~/.vimrc
-cp -r vim/.bashrc ~/.bashrc
+echo "[*] Setting up dot config..."
+cp -r dotfiles/.vimrc ~/.vimrc
+cp dotfiles/.bashrc ~/.bashrc
+cp dotfiles/.gitconfig ~/.gitconfig
 
 echo "[✓] Setup complete."
