@@ -8,7 +8,7 @@ echo "[*] Starting Hypland config setup..."
 if command -v pacman &>/dev/null; then
   echo "[*] Installing packages..."
   # download software I use
-  sudo pacman -S --noconfirm keyd obsidian hyprland waybar vim nvim visual-studio-code-bin obs-studio
+  sudo pacman -S --noconfirm keyd obsidian hyprland waybar vim visual-studio-code-bin obs-studio neovim
   # download korean
   sudo pacman -S --noconfirm noto-fonts-cjk
 fi
