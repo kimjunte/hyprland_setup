@@ -1,5 +1,4 @@
 return {
-  "echasnovski/mini.files",
   opts = {
     mappings = {
       ["<Up>"] = "k",
