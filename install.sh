@@ -32,7 +32,7 @@ cp -r waybar/* ~/.config/waybar/
 # Copy nvim setting
 echo "[*] Setting up nvim config..."
 mkdir -p ~/.config/nvim
-cp -r nvim/* ~/.config/nvim/
+cp -r nvim/. ~/.config/nvim/
 
 echo "[*] Setting up dot config..."
 cp -r dotfiles/.vimrc ~/.vimrc
