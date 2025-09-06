@@ -1,10 +1,13 @@
+-- lua/plugins/extend-mini-files.lua
 return {
+  "echasnovski/mini.files",
   opts = {
     mappings = {
-      ["<Up>"] = "k",
-      ["<Down>"] = "j",
-      ["<Left>"] = "h",
-      ["<Right>"] = "l",
+      go_in = "<Right>",
+      go_in_plus = "<CR>",
+      go_out = "<Left>",
+      go_up = "<Up>",
+      go_down = "<Down>",
     },
   },
 }
