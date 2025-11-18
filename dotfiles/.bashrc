@@ -8,4 +8,5 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
   ssh-add ~/.ssh/id_ed25519 2>/dev/null
 fi
 
-alias mist="ssh kimjunte@192.168.0.181"
+alias mist="ssh kimjunte@192.168.0.151"
+alias misto="ssh kimjunte@mealcraft.com""
