@@ -13,19 +13,39 @@ if command -v pacman &>/dev/null; then
   sudo pacman -S --noconfirm noto-fonts-cjk
 fi
 
+echo "[*] Installing VSCode (visual-studio-code-bin)..."
+
+if command -v yay &>/dev/null; then
+  echo "[*] Using yay..."
+  yay -S --noconfirm visual-studio-code-bin
+
+elif command -v paru &>/dev/null; then
+  echo "[*] Using paru..."
+  paru -S --noconfirm visual-studio-code-bin
+
+else
+  echo "[*] No AUR helper found. Installing manually..."
+  sudo pacman -S --noconfirm base-devel git
+
+  git clone https://aur.archlinux.org/visual-studio-code-bin.git /tmp/vscode-bin
+  cd /tmp/vscode-bin
+  makepkg -si --noconfirm
+  cd -
+fi
+
 # Copy keyd config
 echo "[*] Setting up keyd..."
 sudo mkdir -p /etc/keyd
 sudo cp keyd/default.conf /etc/keyd/default.conf
 sudo systemctl enable --now keyd
 
-# Copy hyprland config
+# Copy Hyprland config
 echo "[*] Setting up Hyprland config..."
 mkdir -p ~/.config/hypr
 cp -r hypr/* ~/.config/hypr/
 
-# Copy wayland config
-echo "[*] Setting up Wayland config..."
+# Copy Waybar config
+echo "[*] Setting up Waybar config..."
 mkdir -p ~/.config/waybar
 cp -r waybar/* ~/.config/waybar/
 
@@ -35,3 +55,4 @@ cp dotfiles/.bashrc ~/.bashrc
 cp dotfiles/.gitconfig ~/.gitconfig
 
 echo "[✓] Setup complete."
+
