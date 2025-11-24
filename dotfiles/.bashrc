@@ -10,3 +10,5 @@ fi
 
 alias mist="ssh kimjunte@192.168.0.181"
 alias misto="ssh kimjunte@mealcraft.com"
+alias filesync="sshfs kimjunte@192.168.0.181:/home/kimjunte/github ~/github"
+
