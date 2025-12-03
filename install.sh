@@ -11,6 +11,10 @@ if command -v pacman &>/dev/null; then
   sudo pacman -S --noconfirm gcc keyd obsidian hyprland waybar vim obs-studio neovim
   # download korean
   sudo pacman -S --noconfirm noto-fonts-cjk
+  # download sshfs
+  sudo pacman -S --noconfirm sshfs
+  # neofetch
+  sudo pacman -S --noconfim fastfetch
 fi
 
 echo "[*] Installing VSCode (visual-studio-code-bin)..."
@@ -55,4 +59,3 @@ cp dotfiles/.bashrc ~/.bashrc
 cp dotfiles/.gitconfig ~/.gitconfig
 
 echo "[✓] Setup complete."
-
