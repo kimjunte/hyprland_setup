@@ -8,7 +8,7 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
   ssh-add ~/.ssh/id_ed25519 2>/dev/null
 fi
 
-alias k9slog="sshfs kimjunte@192.168.0.181:/.local/state/k9s/screen-dumps/microk8s-cluster/microk8s ~/logs"
+alias k9slog="sshfs kimjunte@192.168.0.181:/home/kimjunte/.local/state/k9s/screen-dumps/microk8s-cluster/microk8s ~/logs"
 alias mist="ssh kimjunte@192.168.0.181"
 alias misto="ssh kimjunte@mealcraft.com"
 alias filesync="sshfs kimjunte@192.168.0.181:/home/kimjunte/github ~/github"
