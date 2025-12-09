@@ -1,140 +1,132 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "[*] Starting Hyprland config setup..."
+BLUE="\033[1;34m"
+GREEN="\033[1;32m"
+RED="\033[1;31m"
+NC="\033[0m"
+log() { echo -e "${BLUE}[*]${NC} $1"; }
+ok() { echo -e "${GREEN}[✔]${NC} $1"; }
+err() { echo -e "${RED}[!]${NC} $1"; }
+
+log "Starting Hyprland setup (NO STOW, dotfiles preserved)..."
 
 # ---------------------------------------------------------
-# 0. Detect Arch Linux
+# 0. Ensure Arch Linux
 # ---------------------------------------------------------
-if ! command -v pacman &>/dev/null; then
-  echo "[!] This installer is made for Arch Linux."
+if ! command -v pacman >/dev/null; then
+  err "This installer is for Arch Linux only."
   exit 1
 fi
 
 # ---------------------------------------------------------
-# 1. Install required packages
+# 1. Install packages
 # ---------------------------------------------------------
-echo "[*] Installing packages..."
-
+log "Installing base packages..."
 sudo pacman -Syu --noconfirm
-
 sudo pacman -S --noconfirm \
-  gcc \
-  keyd \
-  obsidian \
-  hyprland \
-  waybar \
-  vim \
-  neovim \
-  obs-studio \
-  sshfs \
-  fastfetch \
-  noto-fonts-cjk \
-  stow \
+  gcc keyd obsidian hyprland waybar vim neovim \
+  obs-studio sshfs fastfetch noto-fonts-cjk \
   networkmanager
 
-# ---------------------------------------------------------
-# 2. Install VSCode from AUR
-# ---------------------------------------------------------
-echo "[*] Installing VSCode (visual-studio-code-bin)..."
+ok "Packages installed."
 
-if command -v yay &>/dev/null; then
+# ---------------------------------------------------------
+# 2. Install VSCode (AUR)
+# ---------------------------------------------------------
+log "Installing VSCode AUR package..."
+
+if command -v yay >/dev/null; then
   yay -S --noconfirm visual-studio-code-bin
-elif command -v paru &>/dev/null; then
+elif command -v paru >/dev/null; then
   paru -S --noconfirm visual-studio-code-bin
 else
-  echo "[*] No AUR helper found. Installing paru..."
+  log "Installing paru..."
   sudo pacman -S --noconfirm base-devel git
-
   git clone https://aur.archlinux.org/paru.git /tmp/paru
-  cd /tmp/paru
-  makepkg -si --noconfirm
-  cd -
-
+  (cd /tmp/paru && makepkg -si --noconfirm)
   paru -S --noconfirm visual-studio-code-bin
 fi
 
+ok "VSCode installed."
+
 # ---------------------------------------------------------
-# 3. Enable keyd
+# 3. Install keyd config
 # ---------------------------------------------------------
-echo "[*] Setting up keyd..."
+log "Configuring keyd..."
 sudo mkdir -p /etc/keyd
 sudo cp -f keyd/default.conf /etc/keyd/default.conf
 sudo systemctl enable --now keyd
+ok "keyd configured."
 
-# ---------------------------------------------------------
-# 4. Deploy user configs (Hyprland, Waybar, Dotfiles) using stow
-# ---------------------------------------------------------
-echo "[*] Deploying dotfiles with stow..."
+log "Removing old stow symlinks in HOME..."
 
-mkdir -p ~/.config
+if [[ -d "./dotfiles/home" ]]; then
+  shopt -s dotglob
+  for file in dotfiles/home/*; do
+    name="$(basename "$file")"
+    target="$HOME/$name"
 
-# Home dotfiles
-stow --verbose --restow --target="$HOME" dotfiles
-
-# Hyprland configs
-mkdir -p ~/.config/hypr
-cp -r hypr/* ~/.config/hypr/
-
-# Waybar configs
-mkdir -p ~/.config/waybar
-cp -r waybar/* ~/.config/waybar/
-
-# ---------------------------------------------------------
-# 5. Install NetworkManager dispatcher script via stow
-# --------------------------------------------------------------
-if [[ -d "dotfiles/networkmanager" ]]; then
-  echo "[*] Applying NetworkManager dispatcher script (Pi-hole)..."
-
-  …/NetworkManager/dispatcher.d🔒 ❯ ls
-  Permissions Size User Date Modified Name
-  drwxr-xr-x - root 17 Nov 16:58  no-wait.d
-  drwxr-xr-x - root 17 Nov 16:58  pre-down.d
-  drwxr-xr-x - root 17 Nov 16:58  pre-up.d
-  lrwxrwxrwx - root 9 Dec 00:48 󰡯 99-pihole-dns - >../../../home/kimjunte/hyprland_setup/dotfiles/networkmanager/etc/NetworkManager/dispatcher.d/99-pihole-dns
-
-  …/NetworkManager/dispatcher.d🔒 ❯ cat 99-pihole-dns
-  #!/bin/bash
-
-  # SSID that should use Pi-hole DNS
-  TARGET_SSID="VM6613807"
-  PIHOLE_DNS="192.168.0.201"
-
-  IFACE="$1"
-  STATUS="$2"
-
-  # Only run for wifi
-  if [[ "$IFACE" != wlp* && "$IFACE" != wlan* ]]; then
-    exit 0
-  fi
-
-  CURRENT_SSID=$(nmcli -t -f ACTIVE,SSID dev wifi | grep '^yes' | cut -d: -f2)
-
-  if [[ "$STATUS" == "up" && "$CURRENT_SSID" == "$TARGET_SSID" ]]; then
-    nmcli connection modify "$TARGET_SSID" ipv4.ignore-auto-dns yes
-    nmcli connection modify "$TARGET_SSID" ipv4.dns "$PIHOLE_DNS"
-    logger "Pi-hole DNS applied for $TARGET_SSID"
-  else
-    nmcli connection modify "$TARGET_SSID" ipv4.ignore-auto-dns no
-    nmcli connection modify "$TARGET_SSID" ipv4.dns ""
-    logger "Pi-hole DNS removed (SSID changed)"
-  fi
-
-  …/NetworkManager/dispatcher.d🔒 ❯ sudo stow \
-    --verbose \
-    --restow \
-    --dir=dotfiles \
-    --target=/ \
-    networkmanager
-
-  sudo chmod +x /etc/NetworkManager/dispatcher.d/99-pihole-dns
-else
-  echo "[!] No networkmanager config found in dotfiles/ — skipping."
+    # If it is a symlink, remove it
+    if [[ -L "$target" ]]; then
+      echo " • Removing symlink: $target"
+      rm -f "$target"
+    fi
+  done
+  shopt -u dotglob
 fi
 # ---------------------------------------------------------
-# 6. Enable NetworkManager (if not already)
+# 4. Install HOME dotfiles (dotfiles/home → $HOME)
 # ---------------------------------------------------------
-echo "[*] Ensuring NetworkManager is running..."
+log "Copying HOME dotfiles..."
+
+if [[ -d "./dotfiles/home" ]]; then
+  shopt -s dotglob
+  for file in dotfiles/home/*; do
+    name="$(basename "$file")"
+    cp -f "$file" "$HOME/$name"
+    echo " → $file → $HOME/$name"
+  done
+  shopt -u dotglob
+  ok "HOME dotfiles installed."
+else
+  err "dotfiles/home not found — skipping."
+fi
+
+# ---------------------------------------------------------
+# 5. Install Hyprland + Waybar configs
+# ---------------------------------------------------------
+log "Installing Hyprland config..."
+mkdir -p ~/.config/hypr
+cp -rf hypr/* ~/.config/hypr/
+ok "Hyprland config installed."
+
+log "Installing Waybar config..."
+mkdir -p ~/.config/waybar
+cp -rf waybar/* ~/.config/waybar/
+ok "Waybar config installed."
+
+# ---------------------------------------------------------
+# 6. Install NetworkManager dispatcher (dotfiles/etc → /etc)
+# ---------------------------------------------------------
+log "Installing NetworkManager dispatcher..."
+
+SCRIPT_SRC="dotfiles/etc/NetworkManager/dispatcher.d/99-pihole-dns"
+SCRIPT_DST="/etc/NetworkManager/dispatcher.d/99-pihole-dns"
+
+if [[ -f "$SCRIPT_SRC" ]]; then
+  sudo mkdir -p /etc/NetworkManager/dispatcher.d
+  sudo cp -f "$SCRIPT_SRC" "$SCRIPT_DST"
+  sudo chmod +x "$SCRIPT_DST"
+  ok "Dispatcher installed: $SCRIPT_DST"
+else
+  err "Dispatcher script not found at $SCRIPT_SRC"
+fi
+
+# ---------------------------------------------------------
+# 7. Enable NetworkManager
+# ---------------------------------------------------------
+log "Ensuring NetworkManager is active..."
 sudo systemctl enable --now NetworkManager
 
-echo "[✓] Installation complete! Re-login or reboot recommended."
+ok "Setup complete! Reboot recommended."
