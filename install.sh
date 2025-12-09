@@ -82,15 +82,20 @@ cp -r waybar/* ~/.config/waybar/
 
 # ---------------------------------------------------------
 # 5. Install NetworkManager dispatcher script via stow
-# ---------------------------------------------------------
+# --------------------------------------------------------------
 if [[ -d "dotfiles/networkmanager" ]]; then
   echo "[*] Applying NetworkManager dispatcher script (Pi-hole)..."
-  sudo stow --verbose --restow --target="/" dotfiles/networkmanager
+  sudo stow \
+    --verbose \
+    --restow \
+    --dir=dotfiles \
+    --target=/ \
+    networkmanager
+
   sudo chmod +x /etc/NetworkManager/dispatcher.d/99-pihole-dns
 else
   echo "[!] No networkmanager config found in dotfiles/ — skipping."
 fi
-
 # ---------------------------------------------------------
 # 6. Enable NetworkManager (if not already)
 # ---------------------------------------------------------
