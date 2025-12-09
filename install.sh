@@ -85,7 +85,42 @@ cp -r waybar/* ~/.config/waybar/
 # --------------------------------------------------------------
 if [[ -d "dotfiles/networkmanager" ]]; then
   echo "[*] Applying NetworkManager dispatcher script (Pi-hole)..."
-  sudo stow \
+
+  …/NetworkManager/dispatcher.d🔒 ❯ ls
+  Permissions Size User Date Modified Name
+  drwxr-xr-x - root 17 Nov 16:58  no-wait.d
+  drwxr-xr-x - root 17 Nov 16:58  pre-down.d
+  drwxr-xr-x - root 17 Nov 16:58  pre-up.d
+  lrwxrwxrwx - root 9 Dec 00:48 󰡯 99-pihole-dns - >../../../home/kimjunte/hyprland_setup/dotfiles/networkmanager/etc/NetworkManager/dispatcher.d/99-pihole-dns
+
+  …/NetworkManager/dispatcher.d🔒 ❯ cat 99-pihole-dns
+  #!/bin/bash
+
+  # SSID that should use Pi-hole DNS
+  TARGET_SSID="VM6613807"
+  PIHOLE_DNS="192.168.0.201"
+
+  IFACE="$1"
+  STATUS="$2"
+
+  # Only run for wifi
+  if [[ "$IFACE" != wlp* && "$IFACE" != wlan* ]]; then
+    exit 0
+  fi
+
+  CURRENT_SSID=$(nmcli -t -f ACTIVE,SSID dev wifi | grep '^yes' | cut -d: -f2)
+
+  if [[ "$STATUS" == "up" && "$CURRENT_SSID" == "$TARGET_SSID" ]]; then
+    nmcli connection modify "$TARGET_SSID" ipv4.ignore-auto-dns yes
+    nmcli connection modify "$TARGET_SSID" ipv4.dns "$PIHOLE_DNS"
+    logger "Pi-hole DNS applied for $TARGET_SSID"
+  else
+    nmcli connection modify "$TARGET_SSID" ipv4.ignore-auto-dns no
+    nmcli connection modify "$TARGET_SSID" ipv4.dns ""
+    logger "Pi-hole DNS removed (SSID changed)"
+  fi
+
+  …/NetworkManager/dispatcher.d🔒 ❯ sudo stow \
     --verbose \
     --restow \
     --dir=dotfiles \
