@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# SSID that should use Pi-hole DNS
+TARGET_SSID="VM6613807"
+PIHOLE_DNS="192.168.1.10"
+
+IFACE="$1"
+STATUS="$2"
+
+# Only run for wifi
+if [[ "$IFACE" != wlp* && "$IFACE" != wlan* ]]; then
+    exit 0
+fi
+
+CURRENT_SSID=$(nmcli -t -f ACTIVE,SSID dev wifi | grep '^yes' | cut -d: -f2)
+
+if [[ "$STATUS" == "up" && "$CURRENT_SSID" == "$TARGET_SSID" ]]; then
+    nmcli connection modify "$TARGET_SSID" ipv4.ignore-auto-dns yes
+    nmcli connection modify "$TARGET_SSID" ipv4.dns "$PIHOLE_DNS"
+    logger "Pi-hole DNS applied for $TARGET_SSID"
+else
+    nmcli connection modify "$TARGET_SSID" ipv4.ignore-auto-dns no
+    nmcli connection modify "$TARGET_SSID" ipv4.dns ""
+    logger "Pi-hole DNS removed (SSID changed)"
+fi
+

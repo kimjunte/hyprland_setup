@@ -1,61 +1,100 @@
 #!/bin/bash
+set -euo pipefail
 
-set -e
+echo "[*] Starting Hyprland config setup..."
 
-echo "[*] Starting Hypland config setup..."
-
-# Install required packages (example for Arch-based systems)
-if command -v pacman &>/dev/null; then
-  echo "[*] Installing packages..."
-  # download software I use
-  sudo pacman -S --noconfirm gcc keyd obsidian hyprland waybar vim obs-studio neovim
-  # download korean
-  sudo pacman -S --noconfirm noto-fonts-cjk
-  # download sshfs
-  sudo pacman -S --noconfirm sshfs
-  # neofetch
-  sudo pacman -S --noconfim fastfetch
+# ---------------------------------------------------------
+# 0. Detect Arch Linux
+# ---------------------------------------------------------
+if ! command -v pacman &>/dev/null; then
+  echo "[!] This installer is made for Arch Linux."
+  exit 1
 fi
 
+# ---------------------------------------------------------
+# 1. Install required packages
+# ---------------------------------------------------------
+echo "[*] Installing packages..."
+
+sudo pacman -Syu --noconfirm
+
+sudo pacman -S --noconfirm \
+  gcc \
+  keyd \
+  obsidian \
+  hyprland \
+  waybar \
+  vim \
+  neovim \
+  obs-studio \
+  sshfs \
+  fastfetch \
+  noto-fonts-cjk \
+  stow \
+  networkmanager
+
+# ---------------------------------------------------------
+# 2. Install VSCode from AUR
+# ---------------------------------------------------------
 echo "[*] Installing VSCode (visual-studio-code-bin)..."
 
 if command -v yay &>/dev/null; then
-  echo "[*] Using yay..."
   yay -S --noconfirm visual-studio-code-bin
-
 elif command -v paru &>/dev/null; then
-  echo "[*] Using paru..."
   paru -S --noconfirm visual-studio-code-bin
-
 else
-  echo "[*] No AUR helper found. Installing manually..."
+  echo "[*] No AUR helper found. Installing paru..."
   sudo pacman -S --noconfirm base-devel git
 
-  git clone https://aur.archlinux.org/visual-studio-code-bin.git /tmp/vscode-bin
-  cd /tmp/vscode-bin
+  git clone https://aur.archlinux.org/paru.git /tmp/paru
+  cd /tmp/paru
   makepkg -si --noconfirm
   cd -
+
+  paru -S --noconfirm visual-studio-code-bin
 fi
 
-# Copy keyd config
+# ---------------------------------------------------------
+# 3. Enable keyd
+# ---------------------------------------------------------
 echo "[*] Setting up keyd..."
 sudo mkdir -p /etc/keyd
-sudo cp keyd/default.conf /etc/keyd/default.conf
+sudo cp -f keyd/default.conf /etc/keyd/default.conf
 sudo systemctl enable --now keyd
 
-# Copy Hyprland config
-echo "[*] Setting up Hyprland config..."
+# ---------------------------------------------------------
+# 4. Deploy user configs (Hyprland, Waybar, Dotfiles) using stow
+# ---------------------------------------------------------
+echo "[*] Deploying dotfiles with stow..."
+
+mkdir -p ~/.config
+
+# Home dotfiles
+stow --verbose --restow --target="$HOME" dotfiles
+
+# Hyprland configs
 mkdir -p ~/.config/hypr
 cp -r hypr/* ~/.config/hypr/
 
-# Copy Waybar config
-echo "[*] Setting up Waybar config..."
+# Waybar configs
 mkdir -p ~/.config/waybar
 cp -r waybar/* ~/.config/waybar/
 
-echo "[*] Setting up dot config..."
-cp -r dotfiles/.vimrc ~/.vimrc
-cp dotfiles/.bashrc ~/.bashrc
-cp dotfiles/.gitconfig ~/.gitconfig
+# ---------------------------------------------------------
+# 5. Install NetworkManager dispatcher script via stow
+# ---------------------------------------------------------
+if [[ -d "dotfiles/networkmanager" ]]; then
+  echo "[*] Applying NetworkManager dispatcher script (Pi-hole)..."
+  sudo stow --verbose --restow --target="/" dotfiles/networkmanager
+  sudo chmod +x /etc/NetworkManager/dispatcher.d/99-pihole-dns
+else
+  echo "[!] No networkmanager config found in dotfiles/ — skipping."
+fi
 
-echo "[✓] Setup complete."
+# ---------------------------------------------------------
+# 6. Enable NetworkManager (if not already)
+# ---------------------------------------------------------
+echo "[*] Ensuring NetworkManager is running..."
+sudo systemctl enable --now NetworkManager
+
+echo "[✓] Installation complete! Re-login or reboot recommended."

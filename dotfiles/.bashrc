@@ -9,6 +9,9 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
 fi
 
 alias k9slog="sshfs kimjunte@192.168.0.181:/home/kimjunte/.local/state/k9s/screen-dumps/microk8s-cluster/microk8s ~/logs"
+export EDITOR=vim
+export VISUAL=vim
+
 alias mist="ssh kimjunte@192.168.0.181"
 alias misto="ssh kimjunte@mealcraft.com"
 alias filesync="sshfs kimjunte@192.168.0.181:/home/kimjunte/github ~/github"
