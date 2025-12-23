@@ -27,7 +27,7 @@ sudo pacman -Syu --noconfirm
 sudo pacman -S --noconfirm \
   gcc keyd obsidian hyprland waybar vim neovim \
   obs-studio sshfs fastfetch noto-fonts-cjk \
-  networkmanager
+  networkmanager torbrowser-launcher
 
 ok "Packages installed."
 
