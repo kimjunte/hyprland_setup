@@ -19,3 +19,4 @@ alias filesynco="sshfs kimjunte@mealcraft.com:/home/kimjunte/github ~/github"
 alias code_local="code --remote ssh-remote+kimjunte@192.168.0.181 /home/kimjunte"
 alias code_online="code --remote ssh-remote+kimjunte@mealcraft.com /home/kimjunte"
 alias moonlight="flatpak run com.moonlight_stream.Moonlight"
+alias cpsafe='rsync -avh --progress'
