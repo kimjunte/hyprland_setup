@@ -50,6 +50,22 @@ fi
 
 ok "VSCode installed."
 
+log "Installing Twingate AUR package..."
+
+if command -v yay >/dev/null; then
+  yay -S --noconfirm twingate-client-bin
+elif command -v paru >/dev/null; then
+  paru -S --noconfirm twingate-client-bin
+else
+  log "Installing paru..."
+  sudo pacman -S --noconfirm base-devel git
+  git clone https://aur.archlinux.org/paru.git /tmp/paru
+  (cd /tmp/paru && makepkg -si --noconfirm)
+  paru -S --noconfirm twingate-client-bin
+fi
+
+log "Twingate installation complete"
+
 # ---------------------------------------------------------
 # 3. Install keyd config
 # ---------------------------------------------------------
