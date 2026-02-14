@@ -13,6 +13,7 @@ export EDITOR=vim
 export VISUAL=vim
 
 alias mist="ssh kimjunte@192.168.0.181"
+alias jerry="ssh kimjunte@192.168.0.144"
 alias misto="ssh kimjunte@mealcraft.com"
 alias filesync="sshfs kimjunte@192.168.0.181:/home/kimjunte/github ~/github"
 alias filesynco="sshfs kimjunte@mealcraft.com:/home/kimjunte/github ~/github"
@@ -20,3 +21,4 @@ alias code_local="code --remote ssh-remote+kimjunte@192.168.0.181 /home/kimjunte
 alias code_online="code --remote ssh-remote+kimjunte@mealcraft.com /home/kimjunte"
 alias moonlight="flatpak run com.moonlight_stream.Moonlight"
 alias cpsafe='rsync -avh --progress'
+alias k9s='ssh kimjunte@mealcraft.com -t "k9s"'
