@@ -22,4 +22,8 @@ alias code_online="code --remote ssh-remote+kimjunte@mealcraft.com /home/kimjunt
 alias moonlight="flatpak run com.moonlight_stream.Moonlight"
 alias cpsafe='rsync -avh --progress'
 alias k9s='ssh kimjunte@mealcraft.com -t "k9s"'
+export ANTHROPIC_AUTH_TOKEN=ollama
+export ANTHROPIC_API_KEY=""
+export ANTHROPIC_BASE_URL=https://ollama.juntekim.com
 alias ollama_claude='ollama launch claude --config'
+
