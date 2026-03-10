@@ -14,6 +14,7 @@ export VISUAL=vim
 
 alias mist="ssh kimjunte@192.168.0.181"
 alias jerry="ssh kimjunte@192.168.0.144"
+alias unity="ssh kimjunte@192.168.0.243"
 alias misto="ssh kimjunte@mealcraft.com"
 alias filesync="sshfs kimjunte@192.168.0.181:/home/kimjunte/github ~/github"
 alias filesynco="sshfs kimjunte@mealcraft.com:/home/kimjunte/github ~/github"
