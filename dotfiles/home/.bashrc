@@ -15,6 +15,7 @@ export VISUAL=vim
 alias mist="ssh kimjunte@192.168.0.181"
 alias jerry="ssh kimjunte@192.168.0.144"
 alias unity="ssh kimjunte@192.168.0.243"
+alias caspian="ssh kimjunte@192.168.0.98"
 alias misto="ssh kimjunte@mealcraft.com"
 alias filesync="sshfs kimjunte@192.168.0.181:/home/kimjunte/github ~/github"
 alias filesynco="sshfs kimjunte@mealcraft.com:/home/kimjunte/github ~/github"
@@ -27,4 +28,3 @@ export ANTHROPIC_AUTH_TOKEN=ollama
 export ANTHROPIC_API_KEY=""
 export ANTHROPIC_BASE_URL=https://ollama.juntekim.com
 alias ollama_claude='ollama launch claude --config'
-
